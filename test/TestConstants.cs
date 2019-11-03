@@ -23,5 +23,33 @@ namespace test
 				0x18,0x2D,0x44,0x54,0xFB,0x21,0x09,0x40 //PI in IEEE 754
 			}));
 		}
+
+		//can be used instead of maxima to compute the cordic values
+		//[TestMethod]
+		public void GenerateCordicAngles()
+		{
+			//atan(2^-n); n=[0,27]
+			for(int n=0; n<28; n++) {
+				double a = Math.Atan(Math.Pow(2.0,-n));
+				Helpers.Log("angle "+n+" = "+a);
+			}
+			Assert.IsTrue(true);
+		}
+
+		//can be used instead of maxima to compute the cordic values
+		//[TestMethod]
+		public void GenerateCordicKValues()
+		{
+			// b(i) := sqrt(1/(1 + 2^(-2*i)));
+			// bfloat(product(b(j),j,0,n)); n=[0,23]
+			for(int n=0; n<24; n++) {
+				decimal p = 1.0M;
+				for(int j=0; j<=n; j++) {
+					p *= (decimal)Math.Sqrt(1/(1+Math.Pow(2,-2*j)));
+				}
+				Helpers.Log("K "+n+" = "+p);
+			}
+			Assert.IsTrue(true);
+		}
 	}
 }

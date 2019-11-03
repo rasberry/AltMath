@@ -57,6 +57,20 @@ namespace test
 			Assert.IsTrue(true);
 		}
 
+		[TestMethod]
+		public void TestCordic()
+		{
+			TestCommon((double a) => Htam.Cordic(a).Item2,-Math.PI*2,Math.PI*2);
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestCordic_2()
+		{
+			TestCommon((double a) => Htam.Cordic(a,24).Item2,-Math.PI*2,Math.PI*2);
+			Assert.IsTrue(true);
+		}
+
 		static void TestCommon(Func<float,float> rep, double min, double max)
 		{
 			TestCommon((double a) => (double)rep((float)a),min,max,rep.Method.Name);
