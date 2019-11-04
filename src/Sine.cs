@@ -4,10 +4,14 @@ namespace AltMath
 {
 	public static partial class Htam
 	{
+		const double Math2PI = 2.0 * Math.PI;
+		const double MathPIo2 = Math.PI / 2.0;
+		const double MathPIo4 = Math.PI / 4.0;
+
 		// https://stackoverflow.com/questions/2284860/how-does-c-compute-sin-and-other-math-functions
 		public static double SinSO(double a)
 		{
-			a %= (2.0 * Math.PI);
+			a %= Math2PI;
 
 			int i = 0;
 			double cur = a;
@@ -35,7 +39,7 @@ namespace AltMath
 		};
 		public static double Sin3(double ang)
 		{
-			ang %= (2.0 * Math.PI);
+			ang %= Math2PI;
 			double C = ang * 180.0 / Math.PI;
 
 			double Y = C / 360.0 - Math.Floor(C / 360.0 + 0.5);
@@ -111,11 +115,11 @@ namespace AltMath
 		// https://www.ams.org/journals/mcom/1954-08-047/S0025-5718-1954-0063487-2/S0025-5718-1954-0063487-2.pdf
 		public static double Sin4(double ang)
 		{
-			double abound = ang % (2.0 * Math.PI);
+			double abound = ang % Math2PI;
 
 			//turns out sin(pi/2*x) [-1,1] is the same as sin(x) from [-pi/2,pi/2]
 			//so map [-pi/2,pi/2] to [-1,1]
-			double a = abound * 2 / Math.PI;
+			double a = abound * 2.0 / Math.PI;
 
 			//shift these over
 			     if (a < -3 || a > 3) { a =  a - Math.Sign(a) * 4; }
@@ -181,7 +185,7 @@ namespace AltMath
 
 		public static double Sin5(double ang, int accuracy = 8)
 		{
-			double abound = ang % (2.0 * Math.PI);
+			double abound = ang % Math2PI;
 			double a = abound * 2.0 / Math.PI;
 
 			//shift these over
@@ -209,7 +213,7 @@ namespace AltMath
 		public static (double,double) Cordic(double beta, int accuracy = 8)
 		{
 			var v = (1.0,0.0);
-			if (beta < -Math.PI/2.0 || beta > Math.PI/2.0) {
+			if (beta < -MathPIo2 || beta > MathPIo2) {
 				if (beta < 0.0) {
 					v = Cordic(beta + Math.PI,accuracy);
 				} else {
@@ -277,5 +281,63 @@ namespace AltMath
 			0.60725293500897330505728452408193,0.60725293500890426839140619566113,
 			0.60725293500888700922493661331070,0.60725293500888269443331921770779
 		};
+
+		//https://en.wikipedia.org/wiki/Taylor_series#Approximation_error_and_convergence
+		public static double SinTaylor(double ang)
+		{
+			double a = ang % Math2PI;
+			     if (a < -Math.PI) { a += Math2PI; }
+			else if (a >  Math.PI) { a -= Math2PI; }
+
+			double a2 = a * a;
+			double a3 = a2 * a;
+			double a5 = a3 * a2;
+			double a7 = a5 * a2;
+			double a9 = a7 * a2;
+			double a11 = a9 * a2;
+			double s = a - a3/6.0 + a5/120.0 - a7/5040.0 + a9/362880.0 - a11/39916800.0;
+			return s;
+		}
+
+		// http://www.netlib.org/fdlibm/k_sin.c
+		public static double SinFdlibm(double ang)
+		{
+			// [-pi/4,pi/4]     do nothing
+			// [-3pi/4,-pi/4]   x+pi/2
+			// [3pi/4,pi/4]     -x-pi/2
+			//
+
+			double a = ang % Math2PI;
+			//     if (a < -Math.PI) { a += Math2PI; }
+			//else if (a >  Math.PI) { a -= Math2PI; }
+
+			//shift these over
+			     if (a < -3.0*MathPIo2 || a > 3.0*MathPIo2) { a =  a - Math.Sign(a) * Math2PI; }
+			//reflect these
+			else if (a < -1*MathPIo2 || a > MathPIo2) { a = -a + Math.Sign(a) * Math.PI; }
+
+			double x = a, y = 0, iy = 0;
+			//TODO not sure what "Input y is the tail of x." means
+			long xy = BitConverter.DoubleToInt64Bits(ang);
+			// __HI(x) = *(1+(int*)&x)
+
+			double z,r,v;
+			int ix = (int)(xy & (long)int.MaxValue); /* high word of x */
+			if(ix<0x3e400000)                        /* |x| < 2**-27 */
+			{if((int)x==0) return x;}                /* generate inexact */
+			z = x*x;
+			v = z*x;
+			r = S2+z*(S3+z*(S4+z*(S5+z*S6)));
+			if(iy==0) return x+v*(S1+z*r);
+			else      return x-((z*(HF*y-v*r)-y)-v*S1);
+		}
+
+		const double HF  =  5.00000000000000000000e-01; /* 0x3FE00000, 0x00000000 */
+		const double S1  = -1.66666666666666324348e-01; /* 0xBFC55555, 0x55555549 */
+		const double S2  =  8.33333333332248946124e-03; /* 0x3F811111, 0x1110F8A6 */
+		const double S3  = -1.98412698298579493134e-04; /* 0xBF2A01A0, 0x19C161D5 */
+		const double S4  =  2.75573137070700676789e-06; /* 0x3EC71DE3, 0x57B1FE7D */
+		const double S5  = -2.50507602534068634195e-08; /* 0xBE5AE5E6, 0x8A2B9CEB */
+		const double S6  =  1.58969099521155010221e-10; /* 0x3DE5D93A, 0x5ACFD57C */
 	}
 }
