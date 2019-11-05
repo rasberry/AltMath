@@ -91,6 +91,28 @@ namespace test
 			Assert.IsTrue(true);
 		}
 
+
+		[TestMethod]
+		public void TestSin6()
+		{
+			TestCommon((double a) => Htam.Sin6(a),TestMin,TestMax);
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestSin6_2()
+		{
+			TestCommon((double a) => Htam.Sin6(a,16),TestMin,TestMax);
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestSin6_3()
+		{
+			TestCommon((double a) => Htam.Sin6(a,32),TestMin,TestMax);
+			Assert.IsTrue(true);
+		}
+
 		static void TestCommon(Func<float,float> rep, double min, double max)
 		{
 			TestCommon((double a) => (double)rep((float)a),min,max,rep.Method.Name);

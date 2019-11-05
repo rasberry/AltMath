@@ -339,5 +339,18 @@ namespace AltMath
 		const double S4  =  2.75573137070700676789e-06; /* 0x3EC71DE3, 0x57B1FE7D */
 		const double S5  = -2.50507602534068634195e-08; /* 0xBE5AE5E6, 0x8A2B9CEB */
 		const double S6  =  1.58969099521155010221e-10; /* 0x3DE5D93A, 0x5ACFD57C */
+
+		// http://math2.org/math/algebra/functions/sincos/expansions.htm
+		public static double Sin6(double ang, int accuracy = 8)
+		{
+			double a = ang % Math2PI;
+			double t = a;
+			for(int i=1; i<=accuracy; i++) {
+				double ipi = a / (i * Math.PI);
+				double step = 1 - ipi * ipi;
+				t *= step;
+			}
+			return t;
+		}
 	}
 }
