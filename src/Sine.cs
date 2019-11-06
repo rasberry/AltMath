@@ -4,14 +4,10 @@ namespace AltMath
 {
 	public static partial class Htam
 	{
-		const double Math2PI = 2.0 * Math.PI;
-		const double MathPIo2 = Math.PI / 2.0;
-		const double MathPIo4 = Math.PI / 4.0;
-
 		// https://stackoverflow.com/questions/2284860/how-does-c-compute-sin-and-other-math-functions
 		public static double SinSO(double a)
 		{
-			a %= Math2PI;
+			a %= Const.Math2PI;
 
 			int i = 0;
 			double cur = a;
@@ -39,7 +35,7 @@ namespace AltMath
 		};
 		public static double Sin3(double ang)
 		{
-			ang %= Math2PI;
+			ang %= Const.Math2PI;
 			double C = ang * 180.0 / Math.PI;
 
 			double Y = C / 360.0 - Math.Floor(C / 360.0 + 0.5);
@@ -115,7 +111,7 @@ namespace AltMath
 		// https://www.ams.org/journals/mcom/1954-08-047/S0025-5718-1954-0063487-2/S0025-5718-1954-0063487-2.pdf
 		public static double Sin4(double ang)
 		{
-			double abound = ang % Math2PI;
+			double abound = ang % Const.Math2PI;
 
 			//turns out sin(pi/2*x) [-1,1] is the same as sin(x) from [-pi/2,pi/2]
 			//so map [-pi/2,pi/2] to [-1,1]
@@ -139,18 +135,26 @@ namespace AltMath
 			double a2 = a * a;
 			double a4 = a2 * a2;
 			double a6 = a4 * a2;
-			double a8 = a6 * a2;
-			double a10 = a8 * a2;
+			double a8 = a4 * a4;
+			double a10 = a6 * a4;
+
+			//double sum =
+			//	   1.276278972 * 1
+			//	+ -0.285261569 * (2 * a2 - 1)
+			//	+  0.009118016 * (8 * a4 - 8 * a2 + 1)
+			//	+ -0.000136587 * (32 * a6 - 48 * a4 + 18 * a2 - 1)
+			//	+  0.000001185 * (128 * a8 - 256 * a6 + 160 * a4 - 32 * a2 + 1)
+			//	+ -0.000000007 * (512 * a10 - 1280 * a8 + 1120 * a6 - 400 * a4 + 50 * a2 - 1)
+			//;
 
 			double sum =
-				   1.276278972 * 1
-				+ -0.285261569 * (2 * a2 - 1)
-				+  0.009118016 * (8 * a4 - 8 * a2 + 1)
-				+ -0.000136587 * (32 * a6 - 48 * a4 + 18 * a2 - 1)
-				+  0.000001185 * (128 * a8 - 256 * a6 + 160 * a4 - 32 * a2 + 1)
-				+ -0.000000007 * (512 * a10 - 1280 * a8 + 1120 * a6 - 400 * a4 + 50 * a2 - 1)
+				-0.000003584*a10
+				+0.000160640*a8
+				-0.004681984*a6
+				+0.079692704*a4
+				-0.645964102*a2
+				+1.570796326
 			;
-
 			return a * sum;
 		}
 
@@ -185,7 +189,7 @@ namespace AltMath
 
 		public static double Sin5(double ang, int accuracy = 8)
 		{
-			double abound = ang % Math2PI;
+			double abound = ang % Const.Math2PI;
 			double a = abound * 2.0 / Math.PI;
 
 			//shift these over
@@ -213,7 +217,7 @@ namespace AltMath
 		public static (double,double) Cordic(double beta, int accuracy = 8)
 		{
 			var v = (1.0,0.0);
-			if (beta < -MathPIo2 || beta > MathPIo2) {
+			if (beta < -Const.MathPIo2 || beta > Const.MathPIo2) {
 				if (beta < 0.0) {
 					v = Cordic(beta + Math.PI,accuracy);
 				} else {
@@ -285,9 +289,9 @@ namespace AltMath
 		//https://en.wikipedia.org/wiki/Taylor_series#Approximation_error_and_convergence
 		public static double SinTaylor(double ang)
 		{
-			double a = ang % Math2PI;
-			     if (a < -Math.PI) { a += Math2PI; }
-			else if (a >  Math.PI) { a -= Math2PI; }
+			double a = ang % Const.Math2PI;
+			     if (a < -Math.PI) { a += Const.Math2PI; }
+			else if (a >  Math.PI) { a -= Const.Math2PI; }
 
 			double a2 = a * a;
 			double a3 = a2 * a;
@@ -307,14 +311,18 @@ namespace AltMath
 			// [3pi/4,pi/4]     -x-pi/2
 			//
 
-			double a = ang % Math2PI;
+			double a = ang % Const.Math2PI;
 			//     if (a < -Math.PI) { a += Math2PI; }
 			//else if (a >  Math.PI) { a -= Math2PI; }
 
 			//shift these over
-			     if (a < -3.0*MathPIo2 || a > 3.0*MathPIo2) { a =  a - Math.Sign(a) * Math2PI; }
+			if (a < -3.0*Const.MathPIo2 || a > 3.0*Const.MathPIo2) {
+				a =  a - Math.Sign(a) * Const.Math2PI;
+			}
 			//reflect these
-			else if (a < -1*MathPIo2 || a > MathPIo2) { a = -a + Math.Sign(a) * Math.PI; }
+			else if (a < -Const.MathPIo2 || a > Const.MathPIo2) {
+				a = -a + Math.Sign(a) * Math.PI;
+			}
 
 			double x = a, y = 0, iy = 0;
 			//TODO not sure what "Input y is the tail of x." means
@@ -343,7 +351,7 @@ namespace AltMath
 		// http://math2.org/math/algebra/functions/sincos/expansions.htm
 		public static double Sin6(double ang, int accuracy = 8)
 		{
-			double a = ang % Math2PI;
+			double a = ang % Const.Math2PI;
 			double t = a;
 			for(int i=1; i<=accuracy; i++) {
 				double ipi = a / (i * Math.PI);

@@ -8,17 +8,70 @@ namespace test
 	[TestClass]
 	public class TestAtan
 	{
+		const double TestMin = -10.0;
+		const double TestMax = 10.0;
+
 		[TestMethod]
 		public void TestAtanSO1()
 		{
-			TestCommon(Htam.AtanSO1,-10.0,10.0);
-			TestCommon(Htam.Atan2SO1,-10.0,10.0);
+			TestAll(Htam.AtanSO1);
 			Assert.IsTrue(true);
 		}
 
-		static void TestCommon(Func<float,float> rep, double min, double max)
+		[TestMethod]
+		public void TestAtanMac()
 		{
-			TestCommon((double a) => (double)rep((float)a),min,max,rep.Method.Name);
+			TestAll((double a) => Htam.AtanMac(a));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanMac_2()
+		{
+			TestAll((double a) => Htam.AtanMac(a,16));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanMac_3()
+		{
+			TestAll((double a) => Htam.AtanMac(a,32));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanActon()
+		{
+			TestAll((double a) => Htam.AtanActon(a));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanActon_2()
+		{
+			TestAll((double a) => Htam.AtanActon(a,16));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanActon_3()
+		{
+			TestAll((double a) => Htam.AtanActon(a,32));
+			Assert.IsTrue(true);
+		}
+
+		[TestMethod]
+		public void TestAtanAms()
+		{
+			TestAll(Htam.AtanAms);
+			Assert.IsTrue(true);
+		}
+
+		static void TestAll(Func<double,double> func)
+		{
+			TestCommon(func,TestMin,TestMax);
+			TestCommon((double y,double x) => Htam.Atan2_1(func,y,x),TestMin,TestMax);
+			TestCommon((double y,double x) => Htam.Atan2_2(func,y,x),TestMin,TestMax);
 		}
 
 		static void TestCommon(Func<double,double> rep, double min, double max, string name = null)
@@ -32,9 +85,9 @@ namespace test
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				//string txt = string.Format("{0}\ta={1:E}\tv={2:E}\tc={3:E}\td={4:E}",
-				//	name,a,vrep,vchk,diff);
-				//Helpers.Log(txt);
+				string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
+					name,a,vrep,vchk,diff);
+				Helpers.Log(txt);
 			}
 			Helpers.Log(name+"\ttot="+tot);
 
