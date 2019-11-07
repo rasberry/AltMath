@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 namespace test
 {
 	[TestClass]
-	public class TestConstants
+	public class TestConstants : TestCommon
 	{
 		[DataTestMethod]
 		[DataRow(3.141592653589793238462643383279502884)]

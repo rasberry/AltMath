@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestTransforms
+	public class TestTransforms : TestCommon
 	{
 		[TestMethod]
 		public void TestChebyshev1()
@@ -43,9 +43,9 @@ namespace test
 			double min, double max, int depth
 		) {
 			var coefs = forward(rep,depth,min,max);
-			for(int i=0; i<coefs.Length; i++) {
-				Helpers.Log(i+": "+coefs[i]);
-			}
+			//for(int i=0; i<coefs.Length; i++) {
+			//	Helpers.Log(i+": "+coefs[i]);
+			//}
 
 			double tot = 0.0;
 			for(double a=min; a<max; a+=0.01)

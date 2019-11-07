@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestAtan
+	public class TestAtan : TestCommon
 	{
 		const double TestMin = -10.0;
 		const double TestMax = 10.0;
@@ -69,9 +69,10 @@ namespace test
 
 		static void TestAll(Func<double,double> func)
 		{
-			TestCommon(func,TestMin,TestMax);
-			TestCommon((double y,double x) => Htam.Atan2_1(func,y,x),TestMin,TestMax);
-			TestCommon((double y,double x) => Htam.Atan2_2(func,y,x),TestMin,TestMax);
+			string n = func.Method.Name;
+			TestCommon(func,TestMin,TestMax,n);
+			TestCommon((double y,double x) => Htam.Atan2_1(func,y,x),TestMin,TestMax,n+"-atan21");
+			TestCommon((double y,double x) => Htam.Atan2_2(func,y,x),TestMin,TestMax,n+"-atan22");
 		}
 
 		static void TestCommon(Func<double,double> rep, double min, double max, string name = null)
@@ -85,9 +86,9 @@ namespace test
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
-					name,a,vrep,vchk,diff);
-				Helpers.Log(txt);
+				//string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
+				//	name,a,vrep,vchk,diff);
+				//Helpers.Log(txt);
 			}
 			Helpers.Log(name+"\ttot="+tot);
 

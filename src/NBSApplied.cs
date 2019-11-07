@@ -23,15 +23,71 @@ namespace AltMath
 			return SinRaw(a);
 		}
 
+		public static double Cos(double ang)
+		{
+			double abound = ang % Const.Math2PI;
+
+			//turns out cos(pi/2*x) [-1,1] is the same as cos(x) from [-pi/2,pi/2]
+			//so map [-pi/2,pi/2] to [-1,1]
+			double a = abound * 2.0 / Math.PI;
+
+			//shift these over
+			     if (a < -3 || a > 3) { a =  a - Math.Sign(a) * 4; }
+			//reflect these
+			else if (a < -1 || a > 1) { a = -a + Math.Sign(a) * 2; }
+
+			return CosRaw(a);
+		}
+
+		public static double Atan(double r)
+		{
+			if (r < -1 || r > 1) {
+				return Math.Sign(r) * Const.MathPIo2 - AtanRaw(1.0/r);
+			}
+
+			return AtanRaw(r);
+		}
+
+		public static double Asin(double r)
+		{
+			if (r < -Const.Sqrt2o2 || r > 1.0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			if (r > Const.Sqrt2o2) {
+				return Math.Sqrt(Acos(1 - r*r));
+			}
+			return AsinRaw(r);
+		}
+
+		public static double Acos(double r)
+		{
+			if (r < 0.0 || r > 1.0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			if (r > Const.Sqrt2o2) {
+				return Math.Sqrt(Asin(1 - r*r));
+			}
+			return Const.MathPIo2 - Asin(r);
+		}
+
+		public static double Exp(double x)
+		{
+			if (x < -1.0 || x > 1.0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			return x < 0.0
+				? ExpNegRaw(-x)
+				: ExpPosRaw(x)
+			;
+		}
+
 		static double SinRaw(double a)
 		{
 			if (a < -1 || a > 1) {
 				throw new ArgumentOutOfRangeException();
 			}
 
-			//sin (pi/2*x)
-			//x*sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
-
+			//sin(pi/2*x) = x*sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
 			//A0 =  1.276278962
 			//A1 = -0.285261569
 			//A2 =  0.009118016
@@ -56,32 +112,13 @@ namespace AltMath
 			return a * sum;
 		}
 
-		public static double Cos(double ang)
-		{
-			double abound = ang % Const.Math2PI;
-
-			//turns out cos(pi/2*x) [-1,1] is the same as cos(x) from [-pi/2,pi/2]
-			//so map [-pi/2,pi/2] to [-1,1]
-			double a = abound * 2.0 / Math.PI;
-
-			//shift these over
-			     if (a < -3 || a > 3) { a =  a - Math.Sign(a) * 4; }
-			//reflect these
-			else if (a < -1 || a > 1) { a = -a + Math.Sign(a) * 2; }
-
-			return CosRaw(a);
-		}
-
-
 		static double CosRaw(double a)
 		{
 			if (a < -1 || a > 1) {
 				throw new ArgumentOutOfRangeException();
 			}
 
-			//cos (pi/2*x)
-			//sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
-
+			//cos(pi/2*x) = sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
 			//A0 =  0.472001216
 			//A1 = -0.499403258
 			//A2 =  0.027992080
@@ -106,24 +143,13 @@ namespace AltMath
 			return sum;
 		}
 
-		public static double Atan(double r)
-		{
-			if (r < -1 || r > 1) {
-				return Math.Sign(r) * Const.MathPIo2 - AtanRaw(1.0/r);
-			}
-
-			return AtanRaw(r);
-		}
-
 		static double AtanRaw(double r)
 		{
 			if (r < -1 || r > 1) {
 				throw new ArgumentOutOfRangeException();
 			}
 
-			//arctan(x)
-			//x*sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
-
+			//arctan(x) = x*sum(n=0,inf,An*Tn(x^2)) [-1 <= x <= 1]
 			//A0  =  0.881373587
 			//A1  = -0.105892925
 			//A2  =  0.011135843
@@ -163,36 +189,13 @@ namespace AltMath
 			return sum * r;
 		}
 
-		public static double Asin(double r)
-		{
-			if (r < -Const.Sqrt2o2 || r > 1.0) {
-				throw new ArgumentOutOfRangeException();
-			}
-			if (r > Const.Sqrt2o2) {
-				return Math.Sqrt(Acos(1 - r*r));
-			}
-			return AsinRaw(r);
-		}
-
-		public static double Acos(double r)
-		{
-			if (r < 0.0 || r > 1.0) {
-				throw new ArgumentOutOfRangeException();
-			}
-			if (r > Const.Sqrt2o2) {
-				return Math.Sqrt(Asin(1 - r*r));
-			}
-			return Const.MathPIo2 - Asin(r);
-		}
-
 		static double AsinRaw(double r)
 		{
 			if (r < -Const.Sqrt2o2 || r > Const.Sqrt2o2) {
 				throw new ArgumentOutOfRangeException();
 			}
 
-			//arcsin(s) = x*sum(n=0,inf,An*Tn(2*x^2) [-sqrt(2)/2 <= x <= sqrt(2)/2]
-
+			//arcsin(x) = x*sum(n=0,inf,An*Tn(2*x^2) [-sqrt(2)/2 <= x <= sqrt(2)/2]
 			//A0 = 1.051231959
 			//A1 = 0.054946487
 			//A2 = 0.004080631
@@ -215,29 +218,18 @@ namespace AltMath
 			double r18 = r10 * r8;
 
 			double sum =
-				+0.000524288 * r18
-				-0.001376256 * r16
-				+0.002244608 * r14
-				-0.001036288 * r12
-				+0.002140160 * r10
-				+0.003583744 * r8
-				+0.011198144 * r6
-				+0.037496224 * r4
+				+0.134217728 * r18
+				-0.176160768 * r16
+				+0.143654912 * r14
+				-0.033161216 * r12
+				+0.034242560 * r10
+				+0.028669952 * r8
+				+0.044792576 * r6
+				+0.074992448 * r4
 				+0.166666844 * r2
 				+1.0
 			;
 			return r * sum;
-		}
-
-		public static double Exp(double x)
-		{
-			if (x < -1.0 || x > 1.0) {
-				throw new ArgumentOutOfRangeException();
-			}
-			return x < 0.0
-				? ExpNegRaw(-x)
-				: ExpPosRaw(x)
-			;
 		}
 
 		static double ExpPosRaw(double x)
@@ -287,7 +279,6 @@ namespace AltMath
 			}
 
 			//e^-x = sum(n=0,inf,An*Tn(x)) [0 <= x <= 1]
-
 			//A0 =  0.645035270
 			//A1 = -0.312841606
 			//A2 =  0.038704116
@@ -416,6 +407,108 @@ namespace AltMath
 				+1.0
 			;
 			return sum;
+		}
+
+		static double BesselFirstJ0(double x)
+		{
+			if (x < -10.0 || x > 10.0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			// J0(x) = sum(n=0,inf,An*Tn(x^2/100)) [-10 <= x <= 10]
+			//A0  =  0.031540613
+			//A1  = -0.214616183
+			//A2  =  0.004336620
+			//A3  = -0.266203654
+			//A4  =  0.306125520
+			//A5  = -0.136388770
+			//A6  =  0.034347540
+			//A7  = -0.005698082
+			//A8  =  0.000677504
+			//A9  = -0.000060947
+			//A10 =  0.000004309
+			//A11 = -0.000000246
+			//A12 =  0.000000012
+
+			double x2 = x * x;
+			double x4 = x2 * x2;
+			double x6 = x4 * x2;
+			double x8 = x4 * x4;
+			double x10 = x6 * x4;
+			double x12 = x6 * x6;
+			double x14 = x8 * x6;
+			double x16 = x8 * x8;
+			double x18 = x10 * x8;
+			double x20 = x10 * x10;
+			double x22 = x12 * x10;
+			double x24 = x12 * x12;
+
+			double sum =
+				+1.00663296000E-25 * x24
+				-1.11987916800E-22 * x22
+				+6.68205031400E-20 * x20
+				-2.84139192320E-17 * x18
+				+9.34825164800E-15 * x16
+				-2.40103317504E-12 * x14
+				+4.70892816384E-10 * x12
+				-6.78155865600E-8  * x10
+				+6.78166631936E-6  * x8
+				-4.34027625984E-4  * x6
+				+0.01562499929360  * x4
+				-0.24999999868000  * x2
+				+1.0
+			;
+			return sum;
+		}
+
+		static double BesselFirstJ1(double x)
+		{
+			if (x < -10.0 || x > 10.0) {
+				throw new ArgumentOutOfRangeException();
+			}
+			// J1(x) = x*sum(n=0,inf,An*Tn(x^2/100)) [-10 <= x <= 10]
+			//A0  =  0.0694243523
+			//A1  = -0.1155779057
+			//A2  =  0.1216794099
+			//A3  = -0.1148840465
+			//A4  =  0.0577905331
+			//A5  = -0.0169238801
+			//A6  =  0.0032350252
+			//A7  = -0.0004370609
+			//A8  =  0.0000440991
+			//A9  = -0.0000034583
+			//A10 =  0.0000002172
+			//A11 = -0.0000000112
+			//A12 =  0.0000000005
+
+			double x2 = x * x;
+			double x4 = x2 * x2;
+			double x6 = x4 * x2;
+			double x8 = x4 * x4;
+			double x10 = x6 * x4;
+			double x12 = x6 * x6;
+			double x14 = x8 * x6;
+			double x16 = x8 * x8;
+			double x18 = x10 * x8;
+			double x20 = x10 * x10;
+			double x22 = x12 * x10;
+			double x24 = x12 * x12;
+
+			double sum =
+				+4.19430400000E-27 * x24
+				-4.86539264000E-24 * x22
+				+3.09120193600E-21 * x20
+				-1.42909112320E-18 * x18
+				+5.20178565120E-16 * x16
+				-1.50119137280E-13 * x14
+				+3.36376045568E-11 * x12
+				-5.65136932352E-9  * x10
+				+6.78167970048E-7  * x8
+				-5.42534689792E-5  * x6
+				+0.00260416665432  * x4
+				-0.06249999998200  * x2
+				+0.5
+			;
+			return x * sum;
 		}
 	}
 }

@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 namespace test
 {
 	[TestClass]
-	public class TestMapAngles
+	public class TestMapAngles : TestCommon
 	{
 		//[DataTestMethod]
 		////[DataRow(Math.PI,Math.PI/4.0)]

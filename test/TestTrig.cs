@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestSin
+	public class TestTrig : TestCommon
 	{
 		const double Math2PI = 2.0 * Math.PI;
 		const double MathPIo2 = Math.PI / 2.0;
@@ -17,77 +17,82 @@ namespace test
 		[TestMethod]
 		public void TestSinSO()
 		{
-			TestCommon(Htam.SinSO,TestMin,TestMax);
+			TestCommon(Htam.SinSO,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin3()
 		{
-			TestCommon(Htam.Sin3,TestMin,TestMax);
+			TestCommon(Htam.Sin3,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSinXupremZero()
 		{
-			TestCommon(Htam.SinXupremZero,TestMin,TestMax);
+			TestCommon(Htam.SinXupremZero,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
-		public void TestSin4()
+		public void TestSinAms()
 		{
-			TestCommon(Htam.Sin4,TestMin,TestMax);
+			TestCommon(Htam.SinAms,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin5()
 		{
-			TestCommon((double a) => Htam.Sin5(a),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin5(a),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin5_2()
 		{
-			TestCommon((double a) => Htam.Sin5(a,16),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin5(a,16),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin5_3()
 		{
-			TestCommon((double a) => Htam.Sin5(a,32),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin5(a,32),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestCordic()
 		{
-			TestCommon((double a) => Htam.Cordic(a).Item2,TestMin,TestMax);
+			TestCommon((double a) => Htam.Cordic(a).Item2,
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestCordic_2()
 		{
-			TestCommon((double a) => Htam.Cordic(a,24).Item2,TestMin,TestMax);
+			TestCommon((double a) => Htam.Cordic(a,24).Item2,
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSinTaylor()
 		{
-			TestCommon(Htam.SinTaylor,TestMin,TestMax);
+			TestCommon(Htam.SinTaylor,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSinFdlibm()
 		{
-			TestCommon(Htam.SinFdlibm,TestMin,TestMax);
+			TestCommon(Htam.SinFdlibm,Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
@@ -95,30 +100,40 @@ namespace test
 		[TestMethod]
 		public void TestSin6()
 		{
-			TestCommon((double a) => Htam.Sin6(a),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin6(a),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin6_2()
 		{
-			TestCommon((double a) => Htam.Sin6(a,16),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin6(a,16),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
 		[TestMethod]
 		public void TestSin6_3()
 		{
-			TestCommon((double a) => Htam.Sin6(a,32),TestMin,TestMax);
+			TestCommon((double a) => Htam.Sin6(a,32),
+				Math.Sin,TestMin,TestMax);
 			Assert.IsTrue(true);
 		}
 
-		static void TestCommon(Func<float,float> rep, double min, double max)
+		[TestMethod]
+		public void TestCosAms()
 		{
-			TestCommon((double a) => (double)rep((float)a),min,max,rep.Method.Name);
+			TestCommon(NBSApplied.Cos,Math.Cos,TestMin,TestMax,"NBSCos");
+			Assert.IsTrue(true);
 		}
 
-		static void TestCommon(Func<double,double> rep, double min, double max, string name = null)
+		static void TestCommon(Func<float,float> rep, Func<double,double> check,double min, double max)
+		{
+			TestCommon((double a) => (double)rep((float)a),check,min,max,rep.Method.Name);
+		}
+
+		static void TestCommon(Func<double,double> rep, Func<double,double> check, double min, double max, string name = null)
 		{
 			double tot = 0.0;
 			if (name == null) { name = rep.Method.Name; }
@@ -144,6 +159,14 @@ namespace test
 		}
 
 
+		//TODO === these are pretty much wrong
+		// they were supposed to take the full cirlce range
+		// and cut it down to a specified interval
+		// i think these actually need to be transforms instead
+		// taking a function as input
+		// because they need to reduce the input angle
+		// then modify the output to the appropriate quatrant
+		#if false
 		[TestMethod]
 		public void TestSinRange1()
 		{
@@ -206,5 +229,6 @@ namespace test
 			//Helpers.Log("tot="+tot);
 			Assert.AreEqual(tot,1e-10,1e-10);
 		}
+		#endif
 	}
 }

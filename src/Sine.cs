@@ -109,53 +109,9 @@ namespace AltMath
 		//}
 
 		// https://www.ams.org/journals/mcom/1954-08-047/S0025-5718-1954-0063487-2/S0025-5718-1954-0063487-2.pdf
-		public static double Sin4(double ang)
+		public static double SinAms(double ang)
 		{
-			double abound = ang % Const.Math2PI;
-
-			//turns out sin(pi/2*x) [-1,1] is the same as sin(x) from [-pi/2,pi/2]
-			//so map [-pi/2,pi/2] to [-1,1]
-			double a = abound * 2.0 / Math.PI;
-
-			//shift these over
-			     if (a < -3 || a > 3) { a =  a - Math.Sign(a) * 4; }
-			//reflect these
-			else if (a < -1 || a > 1) { a = -a + Math.Sign(a) * 2; }
-
-			//sin (pi/2*x)
-			//sum(n=0,inf An*Tn(x^2) (-1 <= x <= 1)
-
-			//T0 = 1
-			//T1 = 2x - 1
-			//T2 = 8x^2 - 8x + 1
-			//T3 = 32x^3 - 48x^2 + 18x - 1
-			//T4 = 128x^4 - 256x^3 + 160x^2 - 32x + 1
-			//T5 = 512x^5 - 1280x^4 + 1120x^3 - 400x^2 + 50x - 1
-
-			double a2 = a * a;
-			double a4 = a2 * a2;
-			double a6 = a4 * a2;
-			double a8 = a4 * a4;
-			double a10 = a6 * a4;
-
-			//double sum =
-			//	   1.276278972 * 1
-			//	+ -0.285261569 * (2 * a2 - 1)
-			//	+  0.009118016 * (8 * a4 - 8 * a2 + 1)
-			//	+ -0.000136587 * (32 * a6 - 48 * a4 + 18 * a2 - 1)
-			//	+  0.000001185 * (128 * a8 - 256 * a6 + 160 * a4 - 32 * a2 + 1)
-			//	+ -0.000000007 * (512 * a10 - 1280 * a8 + 1120 * a6 - 400 * a4 + 50 * a2 - 1)
-			//;
-
-			double sum =
-				-0.000003584*a10
-				+0.000160640*a8
-				-0.004681984*a6
-				+0.079692704*a4
-				-0.645964102*a2
-				+1.570796326
-			;
-			return a * sum;
+			return NBSApplied.Sin(ang);
 		}
 
 		// sin(x*pi/2) [-1,1]
