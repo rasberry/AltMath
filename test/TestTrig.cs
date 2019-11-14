@@ -140,13 +140,13 @@ namespace test
 			for(double a=min; a<max; a+=0.1)
 			{
 				double vrep = rep(a);
-				double vchk = Math.Sin(a);
+				double vchk = check(a);
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				//string txt = string.Format("{0}\ta={1:E}\tv={2:E}\tc={3:E}\td={4:E}",
-				//	name,a,vrep,vchk,diff);
-				//Helpers.Log(txt);
+				string txt = string.Format("{0}\ta={1:E}\tv={2:E}\tc={3:E}\td={4:E}",
+					name,a,vrep,vchk,diff);
+				Helpers.Log(txt);
 			}
 			Helpers.Log(name+"\ttot="+tot);
 

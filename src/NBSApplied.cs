@@ -30,13 +30,19 @@ namespace AltMath
 			//turns out cos(pi/2*x) [-1,1] is the same as cos(x) from [-pi/2,pi/2]
 			//so map [-pi/2,pi/2] to [-1,1]
 			double a = abound * 2.0 / Math.PI;
+			bool negate = false;
 
 			//shift these over
-			     if (a < -3 || a > 3) { a =  a - Math.Sign(a) * 4; }
+			if (a < -3 || a > 3) {
+				a = a - Math.Sign(a) * 4;
+			}
 			//reflect these
-			else if (a < -1 || a > 1) { a = -a + Math.Sign(a) * 2; }
+			else if (a < -1 || a > 1) {
+				a = a - Math.Sign(a) * 2;
+				negate = true;
+			}
 
-			return CosRaw(a);
+			return (negate ? -1 : 1) * CosRaw(a);
 		}
 
 		public static double Atan(double r)
