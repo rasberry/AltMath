@@ -315,5 +315,9 @@ namespace AltMath
 			}
 			return t;
 		}
+
+		//maybe look at
+		// https://github.com/JuliaMath/openlibm/blob/master/src/s_sin.c
+		// https://github.com/freemint/fdlibm/blob/master/e_atan2.c
 	}
 }
