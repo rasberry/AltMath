@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestAtan : TestCommon
+	public class TestArcTrig : TestCommon
 	{
 		const double TestMin = -10.0;
 		const double TestMax = 10.0;
@@ -67,6 +67,13 @@ namespace test
 			Assert.IsTrue(true);
 		}
 
+		[TestMethod]
+		public void TestAtanFDLibM()
+		{
+			TestAll(Htam.Atanfdlibm);
+			Assert.IsTrue(true);
+		}
+
 		static void TestAll(Func<double,double> func)
 		{
 			string n = func.Method.Name;
@@ -86,9 +93,9 @@ namespace test
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				//string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
-				//	name,a,vrep,vchk,diff);
-				//Helpers.Log(txt);
+				string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
+					name,a,vrep,vchk,diff);
+				Helpers.Log(txt);
 			}
 			Helpers.Log(name+"\ttot="+tot);
 

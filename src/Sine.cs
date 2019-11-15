@@ -282,18 +282,17 @@ namespace AltMath
 
 			double x = a, y = 0, iy = 0;
 			//TODO not sure what "Input y is the tail of x." means
-			long xy = BitConverter.DoubleToInt64Bits(ang);
-			// __HI(x) = *(1+(int*)&x)
 
 			double z,r,v;
-			int ix = (int)(xy & (long)int.MaxValue); /* high word of x */
-			if(ix<0x3e400000)                        /* |x| < 2**-27 */
-			{if((int)x==0) return x;}                /* generate inexact */
-			z = x*x;
-			v = z*x;
-			r = S2+z*(S3+z*(S4+z*(S5+z*S6)));
-			if(iy==0) return x+v*(S1+z*r);
-			else      return x-((z*(HF*y-v*r)-y)-v*S1);
+			int ix = Helpers.HI(ang);       /* high word of x */
+			if (ix < 0x3e400000) {          /* |x| < 2**-27 */
+				if((int)x==0) { return x; } /* generate inexact */
+			}
+			z = x * x;
+			v = z * x;
+			r = S2 + z * (S3 + z * (S4 + z * (S5 + z * S6)));
+			if (iy == 0) { return x + v * (S1 + z * r); }
+			else         { return x - ((z * (HF * y - v * r) - y) - v * S1); }
 		}
 
 		const double HF  =  5.00000000000000000000e-01; /* 0x3FE00000, 0x00000000 */
