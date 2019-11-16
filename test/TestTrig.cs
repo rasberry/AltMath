@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using AltMath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,127 +14,123 @@ namespace test
 		const double MathPIo4 = Math.PI / 4.0;
 		const double TestMin = -Math2PI;
 		const double TestMax = Math2PI;
+		const double XD = 1e-12;
 
-		[TestMethod]
-		public void TestSinSO()
+		[DataTestMethod]
+		[DynamicData(nameof(SinGetData),DynamicDataSourceType.Method)]
+		public void TestTrigSinMain(TestItem item)
 		{
-			TestCommon(Htam.SinSO,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			var func = Unpack(item.Method);
+			double d = TestCommon(func,Math.Sin);
+			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		[TestMethod]
-		public void TestSin3()
+		public IEnumerable<TestItem> SinGetTestItems()
 		{
-			TestCommon(Htam.Sin3,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			yield return new TestItem { Delta = 1.09810064102525E-13, Name = nameof(Htam.SinSO),
+				Method = Pack(Htam.SinSO) };
+
+			yield return new TestItem { Delta = 78.6051247042265, Name = nameof(Htam.Sin3),
+				Method = Pack(Htam.Sin3) };
+
+			yield return new TestItem { Delta = 0.0635031546303115, Name = nameof(Htam.SinXupremZero),
+				Method = Pack(Htam.SinXupremZero) };
+
+			yield return new TestItem { Delta = 3.06749508765944E-08, Name = nameof(Htam.SinAms),
+				Method = Pack(Htam.SinAms) };
+
+			yield return new TestItem { Delta = 4.73341042769437E-05, Name = nameof(Htam.Sin5),
+				Method = Pack((double a) => Htam.Sin5(a)) };
+
+			yield return new TestItem { Delta = 1.28626401479628E-13, Name = nameof(Htam.Sin5)+"-16",
+				Method = Pack((double a) => Htam.Sin5(a,16)) };
+
+			yield return new TestItem { Delta = 1.93058194713749E-13, Name = nameof(Htam.Sin5)+"-32",
+				Method = Pack((double a) => Htam.Sin5(a,32)) };
+
+			yield return new TestItem { Delta = 0.301510668694616, Name = nameof(Htam.Cordic)+"-Sin",
+				Method = Pack((double a) => Htam.Cordic(a).Item2) };
+
+			yield return new TestItem { Delta = 4.72747762933103E-06, Name = nameof(Htam.Cordic)+"-Sin-24",
+				Method = Pack((double a) => Htam.Cordic(a,24).Item2) };
+
+			yield return new TestItem { Delta = 0.00400130951601312, Name = nameof(Htam.SinTaylor),
+				Method = Pack(Htam.SinTaylor) };
+
+			yield return new TestItem { Delta = 2.261290882078, Name = nameof(Htam.SinFdlibm),
+				Method = Pack(Htam.SinFdlibm) };
+
+			yield return new TestItem { Delta = 14.075154510891, Name = nameof(Htam.Sin6),
+				Method = Pack((double a) => Htam.Sin6(a)) };
+
+			yield return new TestItem { Delta = 6.75028061584193, Name = nameof(Htam.Sin6)+"-16",
+				Method = Pack((double a) => Htam.Sin6(a,16)) };
+
+			yield return new TestItem { Delta = 3.30773444231687, Name = nameof(Htam.Sin6)+"-32",
+				Method = Pack((double a) => Htam.Sin6(a,32)) };
+
 		}
 
-		[TestMethod]
-		public void TestSinXupremZero()
+		public static IEnumerable<object[]> SinGetData()
 		{
-			TestCommon(Htam.SinXupremZero,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			var inst = new TestTrig();
+			foreach(var item in inst.SinGetTestItems()) {
+				yield return new object[] { item };
+			}
 		}
 
-		[TestMethod]
-		public void TestSinAms()
+		[DataTestMethod]
+		[DynamicData(nameof(CosGetData),DynamicDataSourceType.Method)]
+		public void TestTrigCosMain(TestItem item)
 		{
-			TestCommon(Htam.SinAms,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			var func = Unpack(item.Method);
+			double d = TestCommon(func,Math.Cos);
+			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		[TestMethod]
-		public void TestSin5()
+		public IEnumerable<TestItem> CosGetTestItems()
 		{
-			TestCommon((double a) => Htam.Sin5(a),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			yield return new TestItem { Delta = 4.28993995275212E-08, Name = nameof(NBSApplied.Cos),
+				Method = Pack(NBSApplied.Cos) };
+
+			yield return new TestItem { Delta = 0.30451787266993, Name = nameof(Htam.Cordic)+"-Cos",
+				Method = Pack((double a) => Htam.Cordic(a).Item1) };
+
+			yield return new TestItem { Delta = 4.68074049085002E-06, Name = nameof(Htam.Cordic)+"-Cos-24",
+				Method = Pack((double a) => Htam.Cordic(a,24).Item1) };
 		}
 
-		[TestMethod]
-		public void TestSin5_2()
+		public static IEnumerable<object[]> CosGetData()
 		{
-			TestCommon((double a) => Htam.Sin5(a,16),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			var inst = new TestTrig();
+			foreach(var item in inst.CosGetTestItems()) {
+				yield return new object[] { item };
+			}
 		}
 
-		[TestMethod]
-		public void TestSin5_3()
+		public double SpeedTest(TestItem testItem)
 		{
-			TestCommon((double a) => Htam.Sin5(a,32),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+			var func = Unpack(testItem.Method);
+			double tot = 0.0;
+			for(double tt=TestMin; tt<TestMax; tt+=1e-05)
+			{
+				double vrep = func(tt);
+				tot += vrep;
+			}
+			return tot;
 		}
 
-		[TestMethod]
-		public void TestCordic()
-		{
-			TestCommon((double a) => Htam.Cordic(a).Item2,
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
+		static Func<double,double> Unpack(Delegate d) {
+			return (Func<double,double>)d;
+		}
+		static Delegate Pack(Func<double,double> f) {
+			return f;
+		}
+		static Delegate Pack(Func<float,float> f) {
+			return new Func<double,double>((double a) => (double)f((float)a));
 		}
 
-		[TestMethod]
-		public void TestCordic_2()
-		{
-			TestCommon((double a) => Htam.Cordic(a,24).Item2,
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestSinTaylor()
-		{
-			TestCommon(Htam.SinTaylor,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestSinFdlibm()
-		{
-			TestCommon(Htam.SinFdlibm,Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-
-		[TestMethod]
-		public void TestSin6()
-		{
-			TestCommon((double a) => Htam.Sin6(a),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestSin6_2()
-		{
-			TestCommon((double a) => Htam.Sin6(a,16),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestSin6_3()
-		{
-			TestCommon((double a) => Htam.Sin6(a,32),
-				Math.Sin,TestMin,TestMax);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestCosAms()
-		{
-			TestCommon(NBSApplied.Cos,Math.Cos,TestMin,TestMax,"NBSCos");
-			Assert.IsTrue(true);
-		}
-
-		static void TestCommon(Func<float,float> rep, Func<double,double> check,double min, double max)
-		{
-			TestCommon((double a) => (double)rep((float)a),check,min,max,rep.Method.Name);
-		}
-
-		static void TestCommon(Func<double,double> rep, Func<double,double> check, double min, double max, string name = null)
+		static double TestCommon(Func<double,double> rep, Func<double,double> check, double min = TestMin, double max = TestMax, string name = null)
 		{
 			double tot = 0.0;
 			if (name == null) { name = rep.Method.Name; }
@@ -144,18 +141,19 @@ namespace test
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				string txt = string.Format("{0}\ta={1:E}\tv={2:E}\tc={3:E}\td={4:E}",
-					name,a,vrep,vchk,diff);
-				Helpers.Log(txt);
+				//string txt = string.Format("{0}\ta={1:E}\tv={2:E}\tc={3:E}\td={4:E}",
+				//	name,a,vrep,vchk,diff);
+				//Helpers.Log(txt);
 			}
-			Helpers.Log(name+"\ttot="+tot);
+			return tot;
+			//Helpers.Log(name+"\ttot="+tot);
 
-			var sw = Stopwatch.StartNew();
-			for(double tt=min; tt<max; tt+=0.00001)
-			{
-				double vrep = rep(tt);
-			}
-			Helpers.Log(name+"\ttime test="+sw.ElapsedMilliseconds);
+			//var sw = Stopwatch.StartNew();
+			//for(double tt=min; tt<max; tt+=0.00001)
+			//{
+			//	double vrep = rep(tt);
+			//}
+			//Helpers.Log(name+"\ttime test="+sw.ElapsedMilliseconds);
 		}
 
 

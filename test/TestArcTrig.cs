@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using AltMath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,72 +7,76 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestArcTrig : TestCommon
+	public class TestArcTrig : TestCommon, ITestItemProvider
 	{
 		const double TestMin = -10.0;
 		const double TestMax = 10.0;
+		const double XD = 1e-12;
 
-		[TestMethod]
-		public void TestAtanSO1()
+		[DataTestMethod]
+		[DynamicData(nameof(GetData),DynamicDataSourceType.Method)]
+		public void TestArcTrigMain(TestItem item)
 		{
-			TestAll(Htam.AtanSO1);
-			Assert.IsTrue(true);
+			var func = Unpack(item.Method);
+			double d = TestCommon(func);
+			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		[TestMethod]
-		public void TestAtanMac()
+		public IEnumerable<TestItem> GetTestItems()
 		{
-			TestAll((double a) => Htam.AtanMac(a));
-			Assert.IsTrue(true);
+			yield return new TestItem { Delta = 0.0136638037737241, Name = nameof(Htam.AtanSO1),
+				Method = Pack(Htam.AtanSO1) };
+
+			yield return new TestItem { Delta = 0.0935295762042112, Name = nameof(Htam.AtanMac),
+				Method = Pack((double a) => Htam.AtanMac(a)) };
+
+			yield return new TestItem { Delta = 0.0658025452458654, Name = nameof(Htam.AtanMac)+"-16",
+				Method = Pack((double a) => Htam.AtanMac(a,16)) };
+
+			yield return new TestItem { Delta = 0.0569347297414578, Name = nameof(Htam.AtanMac)+"-32",
+				Method = Pack((double a) => Htam.AtanMac(a,32)) };
+
+			yield return new TestItem { Delta = 0.00226640192840601, Name = nameof(Htam.AtanActon),
+				Method = Pack((double a) => Htam.AtanActon(a)) };
+
+			yield return new TestItem { Delta = 3.45821481589903E-08, Name = nameof(Htam.AtanActon)+"-16",
+				Method = Pack((double a) => Htam.AtanActon(a,16)) };
+
+			yield return new TestItem { Delta = 5.04457586814056E-14, Name = nameof(Htam.AtanActon)+"-32",
+				Method = Pack((double a) => Htam.AtanActon(a,32)) };
+
+			yield return new TestItem { Delta = 5.64583343687364E-08, Name = nameof(Htam.AtanAms),
+				Method = Pack((double a) => Htam.AtanAms(a)) };
+
+			yield return new TestItem { Delta = 122.793568849762, Name = nameof(Htam.Atanfdlibm),
+				Method = Pack(Htam.Atanfdlibm) };
 		}
 
-		[TestMethod]
-		public void TestAtanMac_2()
+		public static IEnumerable<object[]> GetData()
 		{
-			TestAll((double a) => Htam.AtanMac(a,16));
-			Assert.IsTrue(true);
+			var inst = new TestArcTrig();
+			foreach(var item in inst.GetTestItems()) {
+				yield return new object[] { item };
+			}
 		}
 
-		[TestMethod]
-		public void TestAtanMac_3()
+		public double SpeedTest(TestItem testItem)
 		{
-			TestAll((double a) => Htam.AtanMac(a,32));
-			Assert.IsTrue(true);
+			var func = Unpack(testItem.Method);
+			double tot = 0.0;
+			for(double tt=TestMin; tt<TestMax; tt+=1e-05)
+			{
+				double vrep = func(tt);
+				tot += vrep;
+			}
+			return tot;
 		}
 
-		[TestMethod]
-		public void TestAtanActon()
-		{
-			TestAll((double a) => Htam.AtanActon(a));
-			Assert.IsTrue(true);
+		static Func<double,double> Unpack(Delegate d) {
+			return (Func<double,double>)d;
 		}
-
-		[TestMethod]
-		public void TestAtanActon_2()
-		{
-			TestAll((double a) => Htam.AtanActon(a,16));
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestAtanActon_3()
-		{
-			TestAll((double a) => Htam.AtanActon(a,32));
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestAtanAms()
-		{
-			TestAll(Htam.AtanAms);
-			Assert.IsTrue(true);
-		}
-
-		[TestMethod]
-		public void TestAtanFDLibM()
-		{
-			TestAll(Htam.Atanfdlibm);
-			Assert.IsTrue(true);
+		static Delegate Pack(Func<double,double> f) {
+			return f;
 		}
 
 		static void TestAll(Func<double,double> func)
@@ -82,7 +87,7 @@ namespace test
 			TestCommon((double y,double x) => Htam.Atan2_2(func,y,x),TestMin,TestMax,n+"-atan22");
 		}
 
-		static void TestCommon(Func<double,double> rep, double min, double max, string name = null)
+		static double TestCommon(Func<double,double> rep, double min = TestMin, double max = TestMax, string name = null)
 		{
 			double tot = 0.0;
 			if (name == null) { name = rep.Method.Name; }
@@ -93,21 +98,22 @@ namespace test
 				double diff = Math.Abs(vrep - vchk);
 				tot += diff;
 
-				string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
-					name,a,vrep,vchk,diff);
-				Helpers.Log(txt);
+				//string txt = string.Format("{0}\ta={1:F6}\tv={2:F6}\tc={3:F6}\td={4:F6}",
+				//	name,a,vrep,vchk,diff);
+				//Helpers.Log(txt);
 			}
-			Helpers.Log(name+"\ttot="+tot);
+			//Helpers.Log(name+"\ttot="+tot);
+			return tot;
 
-			var sw = Stopwatch.StartNew();
-			for(double tt=min; tt<max; tt+=0.00001)
-			{
-				double vrep = rep(tt);
-			}
-			Helpers.Log(name+"\ttime test="+sw.ElapsedMilliseconds);
+			//var sw = Stopwatch.StartNew();
+			//for(double tt=min; tt<max; tt+=0.00001)
+			//{
+			//	double vrep = rep(tt);
+			//}
+			//Helpers.Log(name+"\ttime test="+sw.ElapsedMilliseconds);
 		}
 
-		static void TestCommon(Func<double,double,double> rep, double min, double max,string name = null)
+		static double TestCommon(Func<double,double,double> rep, double min = TestMin, double max = TestMax,string name = null)
 		{
 			double tot = 0.0;
 			if (name == null) { name = rep.Method.Name; }
@@ -123,8 +129,8 @@ namespace test
 				//	name,a,vrep,vchk,diff);
 				//Helpers.Log(txt);
 			}
-			Helpers.Log(name+"\ttot="+tot);
-
+			return tot;
+			//Helpers.Log(name+"\ttot="+tot);
 		}
 	}
 }

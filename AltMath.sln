@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltMath", "src\AltMath.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{32AEBF47-2BD1-4C11-A759-9B3B1FF5EFFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "speed", "speed\speed.csproj", "{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{32AEBF47-2BD1-4C11-A759-9B3B1FF5EFFA}.Release|x64.Build.0 = Release|Any CPU
 		{32AEBF47-2BD1-4C11-A759-9B3B1FF5EFFA}.Release|x86.ActiveCfg = Release|Any CPU
 		{32AEBF47-2BD1-4C11-A759-9B3B1FF5EFFA}.Release|x86.Build.0 = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|x64.Build.0 = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C4C3DF8F-1541-49EC-8764-4E0E60949A7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

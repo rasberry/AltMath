@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace test
@@ -25,5 +26,18 @@ namespace test
 		}
 
 		static StreamWriter FileWriter = null;
+	}
+
+	public class TestItem
+	{
+		public Delegate Method;
+		public double Delta;
+		public string Name;
+	}
+
+	public interface ITestItemProvider
+	{
+		IEnumerable<TestItem> GetTestItems();
+		double SpeedTest(TestItem testItem);
 	}
 }
