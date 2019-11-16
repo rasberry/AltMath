@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace test
 {
 	[TestClass]
-	public class TestTrig : TestCommon
+	public class TestTrig : TestCommon, ITestItemProvider
 	{
 		const double Math2PI = 2.0 * Math.PI;
 		const double MathPIo2 = Math.PI / 2.0;
@@ -16,16 +16,32 @@ namespace test
 		const double TestMax = Math2PI;
 		const double XD = 1e-12;
 
+		public IEnumerable<(TestItem,Func<TestItem,double>)> GetItems()
+		{
+			foreach(var item in SinGetTestItems()) {
+				yield return (item,TestTrigSinAcc);
+			}
+			foreach(var item in CosGetTestItems()) {
+				yield return (item,TestTrigCosAcc);
+			}
+		}
+
 		[DataTestMethod]
 		[DynamicData(nameof(SinGetData),DynamicDataSourceType.Method)]
 		public void TestTrigSinMain(TestItem item)
 		{
-			var func = Unpack(item.Method);
-			double d = TestCommon(func,Math.Sin);
+			double d = TestTrigSinAcc(item);
 			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		public IEnumerable<TestItem> SinGetTestItems()
+		double TestTrigSinAcc(TestItem item)
+		{
+			var func = Unpack(item.Method);
+			double d = TestCommon(func,Math.Sin);
+			return d;
+		}
+
+		IEnumerable<TestItem> SinGetTestItems()
 		{
 			yield return new TestItem { Delta = 1.09810064102525E-13, Name = nameof(Htam.SinSO),
 				Method = Pack(Htam.SinSO) };
@@ -83,12 +99,18 @@ namespace test
 		[DynamicData(nameof(CosGetData),DynamicDataSourceType.Method)]
 		public void TestTrigCosMain(TestItem item)
 		{
-			var func = Unpack(item.Method);
-			double d = TestCommon(func,Math.Cos);
+			double d = TestTrigCosAcc(item);
 			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		public IEnumerable<TestItem> CosGetTestItems()
+		public double TestTrigCosAcc(TestItem item)
+		{
+			var func = Unpack(item.Method);
+			double d = TestCommon(func,Math.Cos);
+			return d;
+		}
+
+		IEnumerable<TestItem> CosGetTestItems()
 		{
 			yield return new TestItem { Delta = 4.28993995275212E-08, Name = nameof(NBSApplied.Cos),
 				Method = Pack(NBSApplied.Cos) };

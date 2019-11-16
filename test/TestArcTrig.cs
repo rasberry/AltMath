@@ -13,16 +13,29 @@ namespace test
 		const double TestMax = 10.0;
 		const double XD = 1e-12;
 
+		public IEnumerable<(TestItem,Func<TestItem,double>)> GetItems()
+		{
+			foreach(var item in GetTestItems()) {
+				yield return (item,TestAccTrigMain);
+			}
+		}
+
 		[DataTestMethod]
 		[DynamicData(nameof(GetData),DynamicDataSourceType.Method)]
 		public void TestArcTrigMain(TestItem item)
 		{
-			var func = Unpack(item.Method);
-			double d = TestCommon(func);
+			double d = TestAccTrigMain(item);
 			Assert.AreEqual(item.Delta,d,XD);
 		}
 
-		public IEnumerable<TestItem> GetTestItems()
+		double TestAccTrigMain(TestItem item)
+		{
+			var func = Unpack(item.Method);
+			double d = TestCommon(func);
+			return d;
+		}
+
+		IEnumerable<TestItem> GetTestItems()
 		{
 			yield return new TestItem { Delta = 0.0136638037737241, Name = nameof(Htam.AtanSO1),
 				Method = Pack(Htam.AtanSO1) };

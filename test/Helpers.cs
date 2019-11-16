@@ -37,7 +37,7 @@ namespace test
 
 	public interface ITestItemProvider
 	{
-		IEnumerable<TestItem> GetTestItems();
 		double SpeedTest(TestItem testItem);
+		IEnumerable<(TestItem,Func<TestItem,double>)> GetItems();
 	}
 }
