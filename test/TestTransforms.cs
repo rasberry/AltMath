@@ -59,45 +59,5 @@ namespace test
 			}
 			Helpers.Log(forward.Method.Name+" tot="+tot);
 		}
-
-		// [TestMethod]
-		//TODO this doesn't seem to work like i'm expecting..
-		// I guess numerics needs an intergraltransform of Chebychev
-		public void TestChebyshevNumerics1()
-		{
-			Func<double,double> func = x => Math.Sin(Math.PI/2.0*x);
-			double min = -1, max = 1;
-
-			TestTramsformCommon(func,
-				(f,d,mn,mx) => {
-					var poly = Transforms.ChebychevPolynomialFirstKind(d,mn,mx);
-					return Transforms.NumericsMap(poly,func);
-				},
-				Transforms.InvChebyshev2,
-				min,max,16
-			);
-
-			Assert.IsTrue(true);
-		}
-
-		// [TestMethod]
-		//TODO this doesn't seem to work like i'm expecting..
-		// I guess numerics needs an intergraltransform of Chebychev
-		public void TestChebyshevNumerics2()
-		{
-			Func<double,double> func = x => Math.Sin(Math.PI/2.0*x);
-			double min = -1, max = 1;
-
-			TestTramsformCommon(func,
-				(f,d,mn,mx) => {
-					var poly = Transforms.ChebychevPolynomialSecondKind(d,mn,mx);
-					return Transforms.NumericsMap(poly,func);
-				},
-				Transforms.InvChebyshev2,
-				min,max,16
-			);
-
-			Assert.IsTrue(true);
-		}
 	}
 }

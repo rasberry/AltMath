@@ -14,3 +14,8 @@ The ones that caught my eye were the trig functions:
 * FSIN
 * FSINCOS
 * FSQRT
+
+## TODO ##
+* Review functions that are way off (innacurate)
+* Do Cross platform testing
+* Add more functions
