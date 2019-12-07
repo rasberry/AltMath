@@ -26,6 +26,7 @@ The ones that caught my eye were the trig functions:
 ### AMD Athlon X2 1700Mhz ###
 
 **test.TestArcTrig**
+
 | Name | Accuracy | Speed |
 | ---- | -------- | ----- |
 | AtanSO1 | 0.0136638037737245 | 213.1517 |
@@ -39,6 +40,7 @@ The ones that caught my eye were the trig functions:
 | Atanfdlibm | 122.793568849762 | 443.1341 |
 
 **test.TestTrig**
+
 | Name | Accuracy | Speed |
 | ---- | -------- | ----- |
 | SinSO | 1.10087619858681E-13 | 4249.7292 |
